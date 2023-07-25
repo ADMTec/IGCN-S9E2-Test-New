@@ -1,0 +1,23 @@
+// Death Stab Visual Fix
+
+//SERVER SIDE
+PMSG_SETAGILITYBUG pAgilityBug;
+pAgilityBug.h.c = 0xC1;
+pAgilityBug.h.headcode = 0xFA;
+pAgilityBug.h.size = sizeof(pAgilityBug);
+pAgilityBug.subcode = 0xA2;
+
+if (lpObj->Class == CLASS_RAGEFIGHTER || lpObj->Class == CLASS_ELF) {
+	pAgilityBug.value = 0x0F;
+} else {
+	pAgilityBug.value = 0x02;
+}
+
+IOCP.DataSend(aIndex, (LPBYTE)&pAgilityBug, sizeof(pAgilityBug));
+
+//CLIENT SIDE
+void GCSetAgilityFix(PMSG_SETAGILITYBUG* lpMsg) {
+	DWORD OldProtect;
+	VirtualProtect((LPVOID)0x00562A0B, 1, PAGE_EXECUTE_READWRITE, &OldProtect); // S9
+	*(BYTE*)(0x00562A0B) = lpMsg->value;
+}
